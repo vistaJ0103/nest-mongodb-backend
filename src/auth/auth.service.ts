@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
+import { FileService } from '../file/file.service';
 import { AuthDto } from './dto/auth.dto';
 
 @Injectable()
@@ -16,8 +17,9 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private fileService: FileService,
   ) {}
-  async signUp(createUserDto: CreateUserDto): Promise<any> {
+  async signUp(createUserDto: CreateUserDto, avatar): Promise<any> {
     // Check if user exists
     const userExists = await this.usersService.findByEmail(createUserDto.email);
     if (userExists) {
@@ -26,8 +28,13 @@ export class AuthService {
 
     // Hash password
     const hash = await this.hashData(createUserDto.password);
+
+    if (avatar) {
+      avatar = this.fileService.createFile(avatar);
+    }
     const newUser = await this.usersService.create({
       ...createUserDto,
+      avatar,
       password: hash,
     });
     const tokens = await this.getTokens(newUser._id, newUser.email);

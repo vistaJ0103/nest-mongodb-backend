@@ -4,9 +4,12 @@ import {
   Get,
   Post,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
@@ -22,8 +25,12 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('signup')
-  signup(@Body(ValidationPipe) createUserDto: CreateUserDto) {
-    return this.authService.signUp(createUserDto);
+  @UseInterceptors(FileInterceptor('avatar'))
+  signup(
+    @Body(ValidationPipe) createUserDto: CreateUserDto,
+    @UploadedFile() avatar,
+  ) {
+    return this.authService.signUp(createUserDto, avatar);
   }
 
   @Post('signin')
