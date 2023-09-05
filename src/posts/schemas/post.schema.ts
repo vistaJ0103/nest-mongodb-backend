@@ -3,11 +3,8 @@ import { Document } from 'mongoose';
 
 export type PostDocument = Post & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Post {
-  @Prop({ required: true })
-  title: string;
-
   @Prop({ required: true })
   content: string;
 
@@ -18,9 +15,6 @@ export class Post {
   author: string;
   @Prop({})
   like: number;
-
-  @Prop({})
-  createdAt: string;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

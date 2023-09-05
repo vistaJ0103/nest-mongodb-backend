@@ -29,12 +29,6 @@ export class CommentariesService {
 
   async findAll(postId): Promise<any> {
     const commentary = await this.commentaryModel.find({ postId: postId });
-    for (let i = 0; i < commentary.length; i++) {
-      const username = await this.userModel
-        .findById(commentary[i].userId)
-        .select('username');
-      commentary[i].userId = username.username;
-    }
     return commentary;
   }
 

@@ -16,5 +16,6 @@ import { Commentary, CommentarySchema } from './schemas/commentary.schema';
   ],
   controllers: [CommentariesController],
   providers: [CommentariesService],
+  exports: [CommentariesService],
 })
 export class CommentariesModule {}

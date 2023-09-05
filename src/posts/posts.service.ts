@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Commentary } from 'src/commentaries/schemas/commentary.schema';
 import { FileService } from 'src/file/file.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -11,13 +12,14 @@ export class PostsService {
   constructor(
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
     private fileService: FileService,
+    @InjectModel(Commentary.name)
+    private commentaryModel: Model<Commentary>,
   ) {}
   async create(createPostDto: CreatePostDto, file, userId: string) {
     if (file) {
       file = this.fileService.createFile(file);
     }
     const createdPosts = await new this.postModel({
-      title: createPostDto.title,
       content: createPostDto.content,
       author: userId,
       file: file,
@@ -27,15 +29,29 @@ export class PostsService {
     return createdPosts.save();
   }
 
-  async findAll() {
-    const posts = await this.postModel.find({});
-    return posts;
+  async findAll(pagenum: number, pagecnt: number) {
+    const posts = await this.postModel.find({}).skip(pagenum).limit(pagecnt);
+    const res: any[] = [];
+    for (let i = 0; i < posts.length; i++) {
+      const comments = await this.commentaryModel
+        .find({ postId: posts[i].id })
+        .limit(3);
+      const _res = {
+        post: posts[i],
+        comments,
+      };
+      res.push(_res);
+    }
+    return res;
   }
 
   async findById(id: string): Promise<PostDocument> {
     return this.postModel.findById(id);
   }
 
+  async postsAll() {
+    return this.postModel.find({});
+  }
   // async update(post_id: number) {
   //   const post = await this.postModel.find({ postId: post_id });
   //   return post;

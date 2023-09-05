@@ -6,10 +6,6 @@ export class CreatePostDto {
     description: 'Posts title',
     example: 'This is posts title',
   })
-  @IsNotEmpty()
-  @IsString()
-  title: string;
-
   @ApiProperty({
     description: 'Posts content',
     example: 'This is posts content with text',

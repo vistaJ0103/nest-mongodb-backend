@@ -53,8 +53,6 @@ export class FollowsController {
   @Get()
   @UseGuards(AccessTokenGuard)
   async following(@Request() req: any) {
-    // const user = await this.usersService.findById(req.user.id);
-    // const userId = user.id;
     return this.followsService.findAll(req.user.id);
   }
 }

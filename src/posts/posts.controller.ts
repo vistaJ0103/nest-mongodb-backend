@@ -55,7 +55,7 @@ export class PostsController {
     @Body(ValidationPipe) createPostDto: CreatePostDto,
     @UploadedFile() file,
   ) {
-    if (createPostDto.title && createPostDto.content) {
+    if (createPostDto.content) {
       return this.postsService.create(createPostDto, file, req.user.id);
     } else {
       throw new HttpException(
@@ -68,14 +68,16 @@ export class PostsController {
   }
   @UseGuards(AccessTokenGuard)
   @Get('all')
-  findAll() {
-    return this.postsService.findAll();
+  findAll(@Body() pagenum: number, pagecnt: number) {
+    const pagenumber = pagenum;
+    const pagecounter = pagecnt;
+    return this.postsService.findAll(pagenumber, pagecounter);
   }
   @UseGuards(AccessTokenGuard)
   @Patch(':post_id')
-  async update(@Param('post_id') post_id: string, @Request() req: boolean) {
+  async update(@Param('post_id') post_id: string, @Body() type: boolean) {
     const post = await this.postsService.findById(post_id);
-    if (req == true) {
+    if (type == true) {
       const like = post.like + 1;
       return this.postsService.update(post_id, { like: like });
     } else {

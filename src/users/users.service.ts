@@ -1,21 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { FollowsService } from 'src/follows/follows.service';
+import { PostsService } from 'src/posts/posts.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './schemas/user.schema';
-
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    private readonly followsService: FollowsService,
+    private readonly postService: PostsService,
+    @InjectModel(User.name) private userModel: Model<UserDocument>, // @InjectModel(Follow.name) private FollowModel: Model<FollowDocument>,
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     const createdUser = new this.userModel(createUserDto);
     return createdUser.save();
   }
 
-  async findAll(): Promise<UserDocument[]> {
-    return this.userModel.find().exec();
+  // async findAll(): Promise<UserDocument[]> {
+  //   return this.userModel.find().exec();
+  // }
+  async findAll(user_id: string) {
+    const user = await this.userModel.findById(user_id);
+    const follow = await this.followsService.findAll(user_id);
+    const posts = await this.postService.postsAll();
+    const postcnt = posts.length;
+    return { user, follow, posts, postcnt };
   }
 
   async findById(id: string): Promise<UserDocument> {
