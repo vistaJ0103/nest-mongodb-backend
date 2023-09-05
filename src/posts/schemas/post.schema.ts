@@ -11,11 +11,16 @@ export class Post {
   @Prop({ required: true })
   content: string;
 
-  @Prop({ required: true })
+  @Prop({})
   file: string;
 
-  @Prop({ required: true })
+  @Prop({})
   author: string;
+  @Prop({})
+  like: number;
+
+  @Prop({})
+  createdAt: string;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

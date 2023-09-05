@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { FileService } from 'src/file/file.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 import { Post, PostDocument } from './schemas/post.schema';
 
 @Injectable()
@@ -20,6 +21,7 @@ export class PostsService {
       content: createPostDto.content,
       author: userId,
       file: file,
+      like: 0,
       createdAt: Date.now(),
     });
     return createdPosts.save();
@@ -30,13 +32,19 @@ export class PostsService {
     return posts;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
+  async findById(id: string): Promise<PostDocument> {
+    return this.postModel.findById(id);
   }
 
-  // update(id: number, updatePostDto: UpdatePostDto) {
-  //   return `This action updates a #${id} post`;
+  // async update(post_id: number) {
+  //   const post = await this.postModel.find({ postId: post_id });
+  //   return post;
   // }
+
+  async update(id: string, UpdatePostDto: UpdatePostDto) {
+    return this.postModel.findByIdAndUpdate(id, UpdatePostDto, { new: true });
+    // .exec();
+  }
 
   remove(id: number) {
     return `This action removes a #${id} post`;

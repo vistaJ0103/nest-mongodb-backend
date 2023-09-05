@@ -21,11 +21,19 @@ export class UsersService {
   async findById(id: string): Promise<UserDocument> {
     return this.userModel.findById(id);
   }
-
+  async findOne(email: string) {
+    return this.userModel
+      .findOne({ email: email })
+      .select('email password emailVerified')
+      .lean()
+      .exec();
+  }
   async findByEmail(email: string): Promise<UserDocument> {
     return this.userModel.findOne({ email }).exec();
   }
-
+  async findByName(username: string): Promise<UserDocument> {
+    return this.userModel.findOne({ username }).exec();
+  }
   async update(
     id: string,
     updateUserDto: UpdateUserDto,

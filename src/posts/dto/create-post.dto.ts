@@ -18,22 +18,7 @@ export class CreatePostDto {
   @IsString()
   content: string;
 
-  /**
-   * User name
-   */
-  @ApiProperty({
-    description: 'Posts author',
-    example: 'This is posts author',
-  })
-  @IsOptional()
-  author: string;
-
-  /**
-   * date of the creation of the news
-   */
-  @IsOptional()
-  createdAt: string;
-
+  like: number;
   @ApiPropertyOptional({ type: ['string'], format: 'binary' })
   @IsOptional()
   file?: any;

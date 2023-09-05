@@ -6,7 +6,11 @@ import { UsersModule } from 'src/users/users.module';
 import { FileService } from '../file/file.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies';
+import {
+  AccessTokenStrategy,
+  LocalStrategy,
+  RefreshTokenStrategy,
+} from './strategies';
 
 @Module({
   imports: [UsersModule, PassportModule, JwtModule.register({})],
@@ -16,6 +20,7 @@ import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies';
     AuthService,
     AccessTokenStrategy,
     RefreshTokenStrategy,
+    LocalStrategy,
     FileService,
   ],
 })

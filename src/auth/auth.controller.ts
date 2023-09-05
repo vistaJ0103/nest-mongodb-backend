@@ -21,11 +21,9 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { LocalAuthGuard } from 'src/common/gaurds/local-auth.guard';
+import { LocalAuthGuard } from 'src/auth/strategies/local-auth.guard';
 import { ErrorResponseDTO } from 'src/error/dto/error.response.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { AccessTokenGuard } from '../common/gaurds/gaurd.access_token';
-import { RefreshTokenGuard } from '../common/gaurds/gaurd.refresh_token';
 import { AuthService } from './auth.service';
 import {
   CredentialsDTO,
@@ -34,6 +32,8 @@ import {
   RefreshTokenDTO,
   SignupResponseDTO,
 } from './dto/auth.dto';
+import { AccessTokenGuard } from './strategies/gaurd.access_token';
+import { RefreshTokenGuard } from './strategies/gaurd.refresh_token';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -80,12 +80,12 @@ export class AuthController {
     description: 'Validation error',
   })
   @Post('signin')
-  @ApiConsumes('multipart/form-data')
+  // @ApiConsumes('multipart/form-data')
   async signin(@Request() req: any) {
     return this.authService.signIn(req.user);
   }
   //logout
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @UseGuards(AccessTokenGuard)
   @Get('logout')
   @ApiOperation({
@@ -104,12 +104,12 @@ export class AuthController {
   })
   async logout(@Req() req: any) {
     Logger.log(req.user.id);
-    const user = await this.authService.logout(req.user['sub']);
+    const user = await this.authService.logout(req.user.id);
     if (!user) throw new BadRequestException('Bad request');
     return { msg: 'Signed out successfully', status: 1 };
   }
   //refresh
-  @ApiBearerAuth()
+  @ApiBearerAuth('access-token')
   @UseGuards(RefreshTokenGuard)
   @Get('refresh')
   @ApiOperation({

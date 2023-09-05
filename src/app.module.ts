@@ -8,6 +8,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PostsModule } from './posts/posts.module';
 import { ErrorModule } from './error/error.module';
+import { CommentariesModule } from './commentaries/commentaries.module';
+import { FollowsModule } from './follows/follows.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { ErrorModule } from './error/error.module';
     MongooseModule.forRoot(process.env.MONGODB_URI),
     PostsModule,
     ErrorModule,
+    CommentariesModule,
+    FollowsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

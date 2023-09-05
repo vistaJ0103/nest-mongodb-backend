@@ -1,7 +1,10 @@
 import {
   BadRequestException,
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -9,7 +12,8 @@ import * as argon2 from 'argon2';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { FileService } from '../file/file.service';
-import { AuthDto } from './dto/auth.dto';
+import { ValidateEmail } from './utils/utils';
+// import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -21,11 +25,26 @@ export class AuthService {
   ) {}
   async signUp(createUserDto: CreateUserDto, avatar): Promise<any> {
     // Check if user exists
-    const userExists = await this.usersService.findByEmail(createUserDto.email);
-    if (userExists) {
-      throw new BadRequestException('User already exists');
+    const userEmailExists = await this.usersService.findByEmail(
+      createUserDto.email,
+    );
+    if (userEmailExists) {
+      throw new BadRequestException('UserEmail already exists');
     }
-
+    const userNameExists = await this.usersService.findByName(
+      createUserDto.username,
+    );
+    if (userNameExists) {
+      throw new BadRequestException('UserName already exists');
+    }
+    const { email } = createUserDto;
+    const validationResult = ValidateEmail(email);
+    if (!validationResult) {
+      throw new HttpException(
+        'Email format is incorrect',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     // Hash password
     const hash = await this.hashData(createUserDto.password);
 
@@ -42,13 +61,33 @@ export class AuthService {
     return { ...tokens, id: newUser._id.toString() };
   }
 
-  async signIn(data: AuthDto) {
+  async validateUser(email: string, password: string): Promise<any> {
+    const validationResult = ValidateEmail(email);
+    if (!validationResult) {
+      throw new BadRequestException('Email format is not correct');
+    }
+    const user = await this.usersService.findOne(email);
+    if (!user) throw new NotFoundException('User Not found');
+
+    const passwordMatches = await argon2.verify(user.password, password);
+    if (passwordMatches) {
+      const { ...result } = user;
+      return result;
+    } else {
+      throw new BadRequestException('Password not matched');
+    }
+  }
+  async signIn(user: any) {
     // Check if user exists
-    const user = await this.usersService.findByEmail(data.email);
-    if (!user) throw new BadRequestException('User does not exist');
-    const passwordMatches = await argon2.verify(user.password, data.password);
-    if (!passwordMatches)
-      throw new BadRequestException('Password is incorrect');
+    // const validationResult = ValidateEmail(data.email);
+    // if (!validationResult) {
+    //   throw new BadRequestException('Email format is not correct');
+    // }
+    // const user = await this.usersService.findByEmail(data.email);
+    // if (!user) throw new BadRequestException('User does not exist');
+    // const passwordMatches = await argon2.verify(user.password, data.password);
+    // if (!passwordMatches)
+    //   throw new BadRequestException('Password is incorrect');
     const tokens = await this.getTokens(user._id, user.email);
     await this.updateRefreshToken(user._id, tokens.refreshToken);
     return {
