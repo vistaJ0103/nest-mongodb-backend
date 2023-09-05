@@ -3,19 +3,18 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreatePostDto {
   @ApiProperty({
-    description: 'Posts title',
-    example: 'This is posts title',
-  })
-  @ApiProperty({
     description: 'Posts content',
     example: 'This is posts content with text',
   })
   @IsNotEmpty()
   @IsString()
   content: string;
-
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  type?: string;
   like: number;
-  @ApiPropertyOptional({ type: ['string'], format: 'binary' })
+  @ApiPropertyOptional({ type: 'string', format: 'binary' })
   @IsOptional()
   file?: any;
 }

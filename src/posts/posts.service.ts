@@ -23,6 +23,7 @@ export class PostsService {
       content: createPostDto.content,
       author: userId,
       file: file,
+      type: createPostDto.type,
       like: 0,
       createdAt: Date.now(),
     });
@@ -30,7 +31,8 @@ export class PostsService {
   }
 
   async findAll(pagenum: number, pagecnt: number) {
-    const posts = await this.postModel.find({}).skip(pagenum).limit(pagecnt);
+    const page: number = (pagenum - 1) * pagecnt;
+    const posts = await this.postModel.find({}).skip(page).limit(pagecnt);
     const res: any[] = [];
     for (let i = 0; i < posts.length; i++) {
       const comments = await this.commentaryModel

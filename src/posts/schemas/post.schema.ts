@@ -10,6 +10,8 @@ export class Post {
 
   @Prop({})
   file: string;
+  @Prop({})
+  type: string;
 
   @Prop({})
   author: string;

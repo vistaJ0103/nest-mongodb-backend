@@ -5,17 +5,19 @@ import {
   HttpException,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  Query,
   Request,
   UploadedFile,
   UseGuards,
   UseInterceptors,
-  ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
+  ApiConsumes,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -23,6 +25,7 @@ import {
 import { GeneralResponseDTO } from 'src/auth/dto/auth.dto';
 import { AccessTokenGuard } from 'src/auth/strategies/gaurd.access_token';
 import { ErrorResponseDTO } from 'src/error/dto/error.response.dto';
+import { AddLikeDto } from './dto/add-like.dto';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostsService } from './posts.service';
 
@@ -34,7 +37,7 @@ export class PostsController {
 
   @UseGuards(AccessTokenGuard)
   @Post('add')
-  // @ApiConsumes('multipart/form-data')
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({
     summary: 'Add Posts',
     description: 'posts added',
@@ -52,7 +55,7 @@ export class PostsController {
   @UseInterceptors(FileInterceptor('file'))
   async create(
     @Request() req: any,
-    @Body(ValidationPipe) createPostDto: CreatePostDto,
+    @Body() createPostDto: CreatePostDto,
     @UploadedFile() file,
   ) {
     if (createPostDto.content) {
@@ -68,19 +71,25 @@ export class PostsController {
   }
   @UseGuards(AccessTokenGuard)
   @Get('all')
-  findAll(@Body() pagenum: number, pagecnt: number) {
+  findAll(
+    @Query('pagenum', ParseIntPipe) pagenum: number,
+    @Query('pagecnt', ParseIntPipe) pagecnt: number,
+  ) {
     const pagenumber = pagenum;
     const pagecounter = pagecnt;
     return this.postsService.findAll(pagenumber, pagecounter);
   }
   @UseGuards(AccessTokenGuard)
   @Patch(':post_id')
-  async update(@Param('post_id') post_id: string, @Body() type: boolean) {
+  async update(
+    @Param('post_id') post_id: string,
+    @Body() addLikeDto: AddLikeDto,
+  ) {
     const post = await this.postsService.findById(post_id);
-    if (type == true) {
+    if (addLikeDto.like == 1) {
       const like = post.like + 1;
       return this.postsService.update(post_id, { like: like });
-    } else {
+    } else if (addLikeDto.like == -1) {
       const like = post.like - 1;
       return this.postsService.update(post_id, { like: like });
     }
