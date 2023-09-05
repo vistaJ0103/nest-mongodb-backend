@@ -6,10 +6,10 @@ export type FollowDocument = Follow & Document;
 @Schema()
 export class Follow {
   @Prop({ required: true })
-  userName: string;
+  userId: string;
 
   @Prop({ required: true })
-  followName: string;
+  followId: string;
 
   @Prop({})
   createdAt: string;

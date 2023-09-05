@@ -8,12 +8,6 @@ export class CreateCommentaryDto {
   })
   commentary: string;
 
-  // @IsOptional()
-  // postId: string;
-
-  // @IsOptional()
-  // userId: string;
-
   @IsOptional()
   createdAt: string;
 }

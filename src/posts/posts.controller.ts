@@ -56,7 +56,7 @@ export class PostsController {
     @UploadedFile() file,
   ) {
     if (createPostDto.title && createPostDto.content) {
-      return this.postsService.create(createPostDto, file, req.userId);
+      return this.postsService.create(createPostDto, file, req.user.id);
     } else {
       throw new HttpException(
         {

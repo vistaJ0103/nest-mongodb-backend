@@ -29,7 +29,7 @@ export class CommentariesController {
   constructor(private readonly commentariesService: CommentariesService) {}
 
   @UseGuards(AccessTokenGuard)
-  @Post('add')
+  @Post(':post_id')
   @ApiOperation({
     summary: 'Add Commentary endpoint',
     description: 'Commentary added',
@@ -46,11 +46,12 @@ export class CommentariesController {
   })
   async create(
     @Request() req: any,
+    @Param('post_id') post_id: string,
     @Body() createCommentaryDto: CreateCommentaryDto,
   ) {
     if (createCommentaryDto.commentary) {
-      const userId = req.userId;
-      const postId = req.postId;
+      const userId = req.user.id;
+      const postId = post_id;
       return await this.commentariesService.create(
         userId,
         postId,

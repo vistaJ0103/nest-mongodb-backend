@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -20,7 +27,7 @@ export class FollowsController {
     private readonly usersService: UsersService,
   ) {}
 
-  @Post('add')
+  @Post(':follow_Name')
   @UseGuards(AccessTokenGuard)
   @ApiOperation({
     summary: 'Add follow endpoint',
@@ -36,17 +43,18 @@ export class FollowsController {
     type: ErrorResponseDTO,
     description: 'Validation error',
   })
-  create(@Request() req: any) {
-    const userId = req.uerId;
-    const followName = req.followName;
-    return this.followsService.create(userId, followName);
+  async create(@Param('follow_Name') follow_Name: string, @Request() req: any) {
+    const userId = req.user.id;
+    const follow = await this.usersService.findByName(follow_Name);
+    const followId = follow.id;
+    return this.followsService.create(userId, followId);
   }
 
   @Get()
   @UseGuards(AccessTokenGuard)
   async following(@Request() req: any) {
-    const user = await this.usersService.findById(req.userId);
-    const userName = user.username;
-    return this.followsService.findAll(userName);
+    // const user = await this.usersService.findById(req.user.id);
+    // const userId = user.id;
+    return this.followsService.findAll(req.user.id);
   }
 }

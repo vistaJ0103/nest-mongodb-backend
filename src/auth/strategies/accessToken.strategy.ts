@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import 'dotenv/config';
@@ -23,8 +23,8 @@ export class AccessTokenStrategy extends PassportStrategy(
   }
 
   async validate(payload: any) {
-    Logger.log(payload);
-    console.log(payload.sub, payload.email);
-    return { id: payload.sub, email: payload.email };
+    // Logger.log(payload);
+    console.log(payload.sub, payload.username);
+    return { id: payload.sub, email: payload.username };
   }
 }

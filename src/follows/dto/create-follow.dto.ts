@@ -3,9 +3,9 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class CreateFollowDto {
   @IsNotEmpty()
   @IsString()
-  userName: string;
+  userId: string;
 
   @IsNotEmpty()
   @IsString()
-  followName: string;
+  followId: string;
 }

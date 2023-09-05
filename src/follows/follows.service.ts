@@ -7,19 +7,19 @@ import { Follow } from './schemas/follow.schema';
 export class FollowsService {
   constructor(@InjectModel(Follow.name) private followModel: Model<Follow>) {}
 
-  async create(userId: string, followName: string) {
+  async create(userId: string, followId: string) {
     const createFollow = await new this.followModel({
       userId: userId,
-      followName: followName,
+      followId: followId,
       createdAt: Date.now(),
     });
     return createFollow.save();
   }
 
-  async findAll(userName) {
-    const follower = await this.followModel.find({ userName: userName });
+  async findAll(userId) {
+    const follower = await this.followModel.find({ userId: userId });
     const followers = follower.length;
-    const following = await this.followModel.find({ followName: userName });
+    const following = await this.followModel.find({ followId: userId });
     const followings = following.length;
     return { followers, followings };
   }
