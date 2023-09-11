@@ -18,6 +18,7 @@ import {
 import { GeneralResponseDTO } from 'src/auth/dto/auth.dto';
 import { AccessTokenGuard } from 'src/auth/strategies/gaurd.access_token';
 import { ErrorResponseDTO } from 'src/error/dto/error.response.dto';
+import { UsersService } from 'src/users/users.service';
 import { CommentariesService } from './commentaries.service';
 import { CreateCommentaryDto } from './dto/create-commentary.dto';
 import { Commentary } from './schemas/commentary.schema';
@@ -26,7 +27,10 @@ import { Commentary } from './schemas/commentary.schema';
 @ApiTags('commentaries')
 @Controller('commentaries')
 export class CommentariesController {
-  constructor(private readonly commentariesService: CommentariesService) {}
+  constructor(
+    private readonly commentariesService: CommentariesService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @UseGuards(AccessTokenGuard)
   @Post(':post_id')
@@ -50,10 +54,11 @@ export class CommentariesController {
     @Body() createCommentaryDto: CreateCommentaryDto,
   ) {
     if (createCommentaryDto.commentary) {
-      const userId = req.user.id;
       const postId = post_id;
+      const user = await this.usersService.findById(req.user.id);
+      const userName = user.username;
       return await this.commentariesService.create(
-        userId,
+        userName,
         postId,
         createCommentaryDto,
       );

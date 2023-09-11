@@ -10,9 +10,9 @@ import { AuthModule } from './auth/auth.module';
 import { CommentariesModule } from './commentaries/commentaries.module';
 import { ErrorModule } from './error/error.module';
 import { FollowsModule } from './follows/follows.module';
+import { LikeModule } from './like/like.module';
 import { PostsModule } from './posts/posts.module';
 import { UsersModule } from './users/users.module';
-import { LikeModule } from './like/like.module';
 
 @Module({
   imports: [
@@ -30,8 +30,8 @@ import { LikeModule } from './like/like.module';
       },
     }),
     ServeStaticModule.forRoot({
-      serveRoot: '/images',
-      rootPath: path.resolve(__dirname, 'static'),
+      serveRoot: '/files',
+      rootPath: path.resolve(__dirname, '..', 'static'),
     }),
     AuthModule,
     UsersModule,

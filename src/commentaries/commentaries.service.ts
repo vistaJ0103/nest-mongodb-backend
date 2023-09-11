@@ -14,13 +14,13 @@ export class CommentariesService {
   ) {}
 
   async create(
-    userId: string,
+    userName: string,
     postId: string,
     createCommentaryDto: CreateCommentaryDto,
   ): Promise<Commentary> {
     const createdCommentary = await new this.commentaryModel({
       commentary: createCommentaryDto.commentary,
-      userId: userId,
+      userName: userName,
       postId: postId,
       createdAt: Date.now(),
     });

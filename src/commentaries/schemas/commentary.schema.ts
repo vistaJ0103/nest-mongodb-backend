@@ -10,7 +10,7 @@ export class Commentary extends Document {
   postId: string;
 
   @Prop()
-  userId: string;
+  userName: string;
 }
 
 /**
