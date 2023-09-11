@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export type PostDocument = Post & Document;
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, toJSON: { getters: true } })
 export class Post {
   @Prop({ required: true })
   content: string;
@@ -15,8 +15,6 @@ export class Post {
 
   @Prop({})
   author: string;
-  @Prop({})
-  like: number;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

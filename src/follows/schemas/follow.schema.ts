@@ -3,16 +3,13 @@ import { Document } from 'mongoose';
 
 export type FollowDocument = Follow & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Follow {
   @Prop({ required: true })
   userId: string;
 
   @Prop({ required: true })
   followId: string;
-
-  @Prop({})
-  createdAt: string;
 }
 
 export const FollowSchema = SchemaFactory.createForClass(Follow);

@@ -6,10 +6,8 @@ export class SwaggerDocumentBuilderModule {
     const options = new DocumentBuilder()
       .setTitle('Stupid API')
       .setDescription('Stupid Api server')
-      .addTag('stupid')
-      .setVersion('1.0')
-      // .addBearerAuth({ in: 'header', type: 'http' })
-      //   .setBasePath('/swagger-ui')
+      .addTag('Istagram')
+      .setVersion('2.0')
       .addBearerAuth(
         {
           // I was also testing it without prefix 'Bearer ' before the JWT
@@ -23,7 +21,6 @@ export class SwaggerDocumentBuilderModule {
         'access-token', // This name here is important for matching up with @ApiBearerAuth() in your controller!
       )
       .build();
-
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup('swagger', app, document);
   }

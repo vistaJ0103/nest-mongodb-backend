@@ -3,14 +3,17 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Commentary } from 'src/commentaries/schemas/commentary.schema';
 import { FileService } from 'src/file/file.service';
+import { Like, LikeDocument } from 'src/like/schemas/like.schema';
+import { User, UserDocument } from '../users/schemas/user.schema';
 import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
 import { Post, PostDocument } from './schemas/post.schema';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Like.name) private likeModel: Model<LikeDocument>,
     private fileService: FileService,
     @InjectModel(Commentary.name)
     private commentaryModel: Model<Commentary>,
@@ -19,12 +22,14 @@ export class PostsService {
     if (file) {
       file = this.fileService.createFile(file);
     }
+    const user = await this.userModel.findById(userId);
+    const author = user.username;
+
     const createdPosts = await new this.postModel({
       content: createPostDto.content,
-      author: userId,
+      author: author,
       file: file,
       type: createPostDto.type,
-      like: 0,
       createdAt: Date.now(),
     });
     return createdPosts.save();
@@ -32,19 +37,31 @@ export class PostsService {
 
   async findAll(pagenum: number, pagecnt: number) {
     const page: number = (pagenum - 1) * pagecnt;
-    const posts = await this.postModel.find({}).skip(page).limit(pagecnt);
-    const res: any[] = [];
-    for (let i = 0; i < posts.length; i++) {
+    const posts = await this.postModel
+      .find({})
+      .sort({ _id: -1 })
+      .skip(page)
+      .limit(pagecnt)
+      .lean()
+      .exec();
+    const postdata: any[] = [];
+    for (const post of posts) {
       const comments = await this.commentaryModel
-        .find({ postId: posts[i].id })
+        .find({ postId: post._id })
+        .sort({ _id: -1 })
         .limit(3);
-      const _res = {
-        post: posts[i],
-        comments,
+      const cnt = await this.likeModel.find({
+        postId: post._id,
+        like: true,
+      });
+      const likecnt = cnt.length;
+      const _post = {
+        ...post,
+        likecnt,
       };
-      res.push(_res);
+      postdata.push({ _post, comments });
     }
-    return res;
+    return postdata;
   }
 
   async findById(id: string): Promise<PostDocument> {
@@ -53,15 +70,6 @@ export class PostsService {
 
   async postsAll() {
     return this.postModel.find({});
-  }
-  // async update(post_id: number) {
-  //   const post = await this.postModel.find({ postId: post_id });
-  //   return post;
-  // }
-
-  async update(id: string, UpdatePostDto: UpdatePostDto) {
-    return this.postModel.findByIdAndUpdate(id, UpdatePostDto, { new: true });
-    // .exec();
   }
 
   remove(id: number) {

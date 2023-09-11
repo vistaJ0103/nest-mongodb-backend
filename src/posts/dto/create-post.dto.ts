@@ -13,7 +13,6 @@ export class CreatePostDto {
   @IsString()
   @IsOptional()
   type?: string;
-  like: number;
   @ApiPropertyOptional({ type: 'string', format: 'binary' })
   @IsOptional()
   file?: any;

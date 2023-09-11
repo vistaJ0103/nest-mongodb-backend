@@ -28,7 +28,9 @@ export class CommentariesService {
   }
 
   async findAll(postId): Promise<any> {
-    const commentary = await this.commentaryModel.find({ postId: postId });
+    const commentary = await this.commentaryModel
+      .find({ postId: postId })
+      .sort({ _id: -1 });
     return commentary;
   }
 

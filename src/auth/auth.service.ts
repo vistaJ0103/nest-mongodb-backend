@@ -58,7 +58,7 @@ export class AuthService {
     });
     const tokens = await this.getTokens(newUser._id, newUser.email);
     await this.updateRefreshToken(newUser._id, tokens.refreshToken);
-    return { ...tokens, id: newUser._id.toString() };
+    return { id: newUser._id.toString() };
   }
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -78,25 +78,13 @@ export class AuthService {
     }
   }
   async signIn(user: any) {
-    // Check if user exists
-    // const validationResult = ValidateEmail(data.email);
-    // if (!validationResult) {
-    //   throw new BadRequestException('Email format is not correct');
-    // }
-    // const user = await this.usersService.findByEmail(data.email);
-    // if (!user) throw new BadRequestException('User does not exist');
-    // const passwordMatches = await argon2.verify(user.password, data.password);
-    // if (!passwordMatches)
-    //   throw new BadRequestException('Password is incorrect');
     const tokens = await this.getTokens(user._id, user.email);
     await this.updateRefreshToken(user._id, tokens.refreshToken);
     return {
       msg: tokens.accessToken,
       status: 1,
-      refresh_token: tokens.refreshToken,
       token_type: 'Bearer',
       expires_in: process.env.JWT_EXPIRATION_TIME,
-      user,
     };
   }
 

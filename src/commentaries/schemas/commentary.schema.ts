@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-@Schema()
+@Schema({ timestamps: true })
 export class Commentary extends Document {
   @Prop()
   commentary: string;
@@ -11,9 +11,6 @@ export class Commentary extends Document {
 
   @Prop()
   userId: string;
-
-  @Prop()
-  createdAt: string;
 }
 
 /**

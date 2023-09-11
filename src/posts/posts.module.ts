@@ -4,6 +4,7 @@ import {
   Commentary,
   CommentarySchema,
 } from 'src/commentaries/schemas/commentary.schema';
+import { Like, LikeSchema } from 'src/like/schemas/like.schema';
 import { User, UserSchema } from 'src/users/schemas/user.schema';
 import { UsersModule } from 'src/users/users.module';
 import { FileService } from '../file/file.service';
@@ -16,6 +17,7 @@ import { Post, PostSchema } from './schemas/post.schema';
     forwardRef(() => UsersModule),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
+    MongooseModule.forFeature([{ name: Like.name, schema: LikeSchema }]),
     MongooseModule.forFeature([
       { name: Commentary.name, schema: CommentarySchema },
     ]),
