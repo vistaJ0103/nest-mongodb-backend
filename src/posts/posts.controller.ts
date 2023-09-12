@@ -69,26 +69,12 @@ export class PostsController {
   @UseGuards(AccessTokenGuard)
   @Get('all')
   findAll(
+    @Request() req: any,
     @Query('pagenum', ParseIntPipe) pagenum: number,
     @Query('pagecnt', ParseIntPipe) pagecnt: number,
   ) {
     const pagenumber = pagenum;
     const pagecounter = pagecnt;
-    return this.postsService.findAll(pagenumber, pagecounter);
+    return this.postsService.findAll(pagenumber, pagecounter, req.user.id);
   }
-  // @UseGuards(AccessTokenGuard)
-  // @Patch(':post_id')
-  // async update(
-  //   @Param('post_id') post_id: string,
-  //   @Body() addLikeDto: AddLikeDto,
-  // ) {
-  //   const post = await this.postsService.findById(post_id);
-  //   if (addLikeDto.like == 1) {
-  //     const like = post.like + 1;
-  //     return this.postsService.update(post_id, { like: like });
-  //   } else if (addLikeDto.like == -1) {
-  //     const like = post.like - 1;
-  //     return this.postsService.update(post_id, { like: like });
-  //   }
-  // }
 }

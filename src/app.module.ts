@@ -30,7 +30,7 @@ import { UsersModule } from './users/users.module';
       },
     }),
     ServeStaticModule.forRoot({
-      serveRoot: '/files',
+      serveRoot: '',
       rootPath: path.resolve(__dirname, '..', 'static'),
     }),
     AuthModule,

@@ -9,34 +9,29 @@ export class LikeService {
   constructor(@InjectModel(Like.name) private likeModel: Model<LikeDocument>) {}
 
   async create(createLikeDto: CreateLikeDto, userId: string, postId: string) {
-    const createLike = await new this.likeModel({
+    return await new this.likeModel({
       userId: userId,
       postId: postId,
       like: createLikeDto.like,
-    });
-    createLike.save();
-    const likecnt = this.likeModel.find({ postId: postId, like: true }).count();
-    return likecnt;
+    }).save();
   }
   async findcnt(postId: string) {
-    return await this.likeModel.find({ postId: postId, like: true }).count();
+    const likecnt = await this.likeModel.find({ postId: postId, like: true });
+    return { likecnt: likecnt.length };
   }
-
   async update(userId: string, postId: string, like: boolean) {
-    await this.likeModel.findOneAndUpdate({
-      userId,
-      postId,
-      like,
-    });
-    const likecnt = this.likeModel.find({ postId: postId, like: true }).count();
-    return likecnt;
+    const filter = { userId: userId, postId: postId };
+    const update = { like: like };
+    return await this.likeModel.findOneAndUpdate(filter, update, { new: true });
   }
 
-  async find(postId: string, userId: string): Promise<LikeDocument> {
-    return await this.likeModel.findOne({
-      userId: userId,
-      postId: postId,
-    });
+  find(postId: string, userId: string) {
+    return this.likeModel
+      .findOne({
+        userId: userId,
+        postId: postId,
+      })
+      .exec();
   }
 
   remove(id: number) {

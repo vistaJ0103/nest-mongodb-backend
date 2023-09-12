@@ -27,13 +27,11 @@ export class LikeController {
   ) {
     const model = await this.likeService.find(post_id, req.user.id);
     if (!model) {
-      return await this.likeService.create(createLikeDto, req.user.id, post_id);
+      await this.likeService.create(createLikeDto, req.user.id, post_id);
+      return this.likeService.findcnt(post_id);
     } else {
-      return await this.likeService.update(
-        req.user.id,
-        post_id,
-        createLikeDto.like,
-      );
+      await this.likeService.update(req.user.id, post_id, createLikeDto.like);
+      return this.likeService.findcnt(post_id);
     }
   }
 

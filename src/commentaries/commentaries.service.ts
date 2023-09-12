@@ -18,7 +18,7 @@ export class CommentariesService {
     postId: string,
     createCommentaryDto: CreateCommentaryDto,
   ): Promise<Commentary> {
-    const createdCommentary = await new this.commentaryModel({
+    const createdCommentary = new this.commentaryModel({
       commentary: createCommentaryDto.commentary,
       userName: userName,
       postId: postId,

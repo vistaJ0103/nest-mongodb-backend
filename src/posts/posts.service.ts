@@ -35,7 +35,7 @@ export class PostsService {
     return createdPosts.save();
   }
 
-  async findAll(pagenum: number, pagecnt: number) {
+  async findAll(pagenum: number, pagecnt: number, userId: string) {
     const page: number = (pagenum - 1) * pagecnt;
     const posts = await this.postModel
       .find({})
@@ -45,6 +45,8 @@ export class PostsService {
       .lean()
       .exec();
     const postdata: any[] = [];
+    let liketype: boolean;
+    // let liketype: boolean = false;
     for (const post of posts) {
       const comments = await this.commentaryModel
         .find({ postId: post._id })
@@ -55,11 +57,21 @@ export class PostsService {
         like: true,
       });
       const likecnt = cnt.length;
+      const type = await this.likeModel.findOne({
+        userId: userId,
+        postId: post._id,
+      });
+      if (!type) {
+        liketype = false;
+      } else {
+        liketype = type.like;
+      }
       const _post = {
         ...post,
         likecnt,
+        liketype,
       };
-      postdata.push({ _post, comments });
+      postdata.push({ post: _post, comments });
     }
     return postdata;
   }
