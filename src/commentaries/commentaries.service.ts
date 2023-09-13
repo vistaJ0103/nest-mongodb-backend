@@ -14,22 +14,22 @@ export class CommentariesService {
   ) {}
 
   async create(
-    userName: string,
+    userId: string,
     postId: string,
     createCommentaryDto: CreateCommentaryDto,
   ): Promise<Commentary> {
     const createdCommentary = new this.commentaryModel({
       commentary: createCommentaryDto.commentary,
-      userName: userName,
-      postId: postId,
-      createdAt: Date.now(),
+      user: userId,
+      post: postId,
     });
     return createdCommentary.save();
   }
 
-  async findAll(postId): Promise<any> {
+  async findAll(postId: string): Promise<any> {
     const commentary = await this.commentaryModel
-      .find({ postId: postId })
+      .find({ post: postId })
+      .populate('user', 'username')
       .sort({ _id: -1 });
     return commentary;
   }

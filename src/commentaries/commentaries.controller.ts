@@ -54,12 +54,9 @@ export class CommentariesController {
     @Body() createCommentaryDto: CreateCommentaryDto,
   ) {
     if (createCommentaryDto.commentary) {
-      const postId = post_id;
-      const user = await this.usersService.findById(req.user.id);
-      const userName = user.username;
       return await this.commentariesService.create(
-        userName,
-        postId,
+        req.user.id,
+        post_id,
         createCommentaryDto,
       );
     } else {

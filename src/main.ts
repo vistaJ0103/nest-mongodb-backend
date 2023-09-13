@@ -13,6 +13,6 @@ async function bootstrap() {
     }),
   );
   SwaggerDocumentBuilderModule.setup(app);
-  await app.listen(3001);
+  await app.listen(3009);
 }
 bootstrap();

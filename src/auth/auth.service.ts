@@ -58,7 +58,11 @@ export class AuthService {
     });
     const tokens = await this.getTokens(newUser._id, newUser.email);
     await this.updateRefreshToken(newUser._id, tokens.refreshToken);
-    return { id: newUser._id.toString() };
+    return {
+      id: newUser._id.toString(),
+      message: 'SignUp successfully',
+      status: 1,
+    };
   }
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -81,7 +85,7 @@ export class AuthService {
     const tokens = await this.getTokens(user._id, user.email);
     await this.updateRefreshToken(user._id, tokens.refreshToken);
     return {
-      msg: tokens.accessToken,
+      accessToken: tokens.accessToken,
       status: 1,
       token_type: 'Bearer',
       expires_in: process.env.JWT_EXPIRATION_TIME,

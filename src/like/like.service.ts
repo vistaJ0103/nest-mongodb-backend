@@ -10,17 +10,17 @@ export class LikeService {
 
   async create(createLikeDto: CreateLikeDto, userId: string, postId: string) {
     return await new this.likeModel({
-      userId: userId,
-      postId: postId,
+      user: userId,
+      post: postId,
       like: createLikeDto.like,
     }).save();
   }
   async findcnt(postId: string) {
-    const likecnt = await this.likeModel.find({ postId: postId, like: true });
+    const likecnt = await this.likeModel.find({ post: postId, like: true });
     return { likecnt: likecnt.length };
   }
   async update(userId: string, postId: string, like: boolean) {
-    const filter = { userId: userId, postId: postId };
+    const filter = { user: userId, post: postId };
     const update = { like: like };
     return await this.likeModel.findOneAndUpdate(filter, update, { new: true });
   }
@@ -28,8 +28,8 @@ export class LikeService {
   find(postId: string, userId: string) {
     return this.likeModel
       .findOne({
-        userId: userId,
-        postId: postId,
+        user: userId,
+        post: postId,
       })
       .exec();
   }

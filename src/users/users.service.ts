@@ -24,7 +24,9 @@ export class UsersService {
     const follow = await this.followsService.findAll(user_id);
     const posts = await this.postService.postsAll();
     const postcnt = posts.length;
-    return { user, follow, posts, postcnt };
+    // user = {user.username}
+    const username = user.username;
+    return { username, follow, posts, postcnt };
   }
 
   async findById(id: string): Promise<UserDocument> {

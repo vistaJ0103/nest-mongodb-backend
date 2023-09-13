@@ -22,15 +22,11 @@ export class PostsService {
     if (file) {
       file = this.fileService.createFile(file);
     }
-    const user = await this.userModel.findById(userId);
-    const author = user.username;
-
     const createdPosts = await new this.postModel({
       content: createPostDto.content,
-      author: author,
+      author: userId,
       file: file,
       type: createPostDto.type,
-      createdAt: Date.now(),
     });
     return createdPosts.save();
   }
@@ -38,7 +34,9 @@ export class PostsService {
   async findAll(pagenum: number, pagecnt: number, userId: string) {
     const page: number = (pagenum - 1) * pagecnt;
     const posts = await this.postModel
-      .find({})
+      .find()
+      .populate('author', ['username'])
+      // .populate('commentary')
       .sort({ _id: -1 })
       .skip(page)
       .limit(pagecnt)
@@ -46,20 +44,20 @@ export class PostsService {
       .exec();
     const postdata: any[] = [];
     let liketype: boolean;
-    // let liketype: boolean = false;
     for (const post of posts) {
       const comments = await this.commentaryModel
-        .find({ postId: post._id })
+        .find({ post: post._id })
+        .populate('user', 'username')
         .sort({ _id: -1 })
         .limit(3);
       const cnt = await this.likeModel.find({
-        postId: post._id,
+        post: post._id,
         like: true,
       });
       const likecnt = cnt.length;
       const type = await this.likeModel.findOne({
-        userId: userId,
-        postId: post._id,
+        user: userId,
+        post: post._id,
       });
       if (!type) {
         liketype = false;
