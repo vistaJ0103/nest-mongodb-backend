@@ -11,9 +11,13 @@ import { FileService } from '../file/file.service';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
 import { Post, PostSchema } from './schemas/post.schema';
+// import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
+    // MulterModule.register({
+    //   dest: './uploads',
+    // }),
     forwardRef(() => UsersModule),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),

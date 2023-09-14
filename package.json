@@ -20,6 +20,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@ffprobe-installer/ffprobe": "^2.1.2",
     "@nestjs/axios": "^3.0.0",
     "@nestjs/common": "^10.2.2",
     "@nestjs/config": "^3.0.1",
@@ -32,6 +34,7 @@
     "@nestjs/serve-static": "^4.0.0",
     "@nestjs/swagger": "^7.1.10",
     "@types/cors": "^2.8.13",
+    "@types/fluent-ffmpeg": "^2.1.21",
     "argon2": "^0.31.0",
     "body-parser": "^1.20.2",
     "buffer-to-stream": "^1.0.0",
@@ -41,8 +44,10 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "ffmpeg": "^0.0.4",
+    "fluent-ffmpeg": "^2.1.2",
     "joi": "^17.10.1",
     "mongoose": "^7.5.0",
+    "os": "^0.1.2",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",

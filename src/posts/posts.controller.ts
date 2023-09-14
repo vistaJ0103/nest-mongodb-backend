@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -8,11 +9,11 @@ import {
   Post,
   Query,
   Request,
-  UploadedFiles,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiConsumes,
@@ -23,7 +24,7 @@ import {
 import { GeneralResponseDTO } from 'src/auth/dto/auth.dto';
 import { AccessTokenGuard } from 'src/auth/strategies/gaurd.access_token';
 import { ErrorResponseDTO } from 'src/error/dto/error.response.dto';
-import { contentFileFilter } from 'src/file/file-filter';
+import { FileValidationErrors, contentFileFilter } from 'src/file/file-filter';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostsService } from './posts.service';
 
@@ -51,25 +52,26 @@ export class PostsController {
     description: 'Validation error',
   })
   @UseInterceptors(
-    FileFieldsInterceptor(
-      [
-        { name: 'file', maxCount: 1 },
-        // { name: 'file1', maxCount: 1 },
-      ],
-      {
-        limits: { fieldSize: 100000000 },
-        fileFilter: contentFileFilter,
-      },
-    ),
+    FileInterceptor('file', {
+      limits: { fieldSize: 100000000 },
+      fileFilter: contentFileFilter,
+    }),
   )
   async create(
     @Request() req: any,
     @Body() createPostDto: CreatePostDto,
-    @UploadedFiles() files,
+    @UploadedFile() file,
   ) {
-    // console.log(files, '+____');
+    if (
+      req.fileValidationError === FileValidationErrors.UNSUPPORTED_FILE_TYPE
+    ) {
+      throw new BadRequestException(
+        'Only images and videos are allowed',
+        `Bad request. Accepted file extensions are: video, image`,
+      );
+    }
     if (createPostDto.content) {
-      return await this.postsService.create(createPostDto, req.user.id, files);
+      return await this.postsService.create(createPostDto, req.user.id, file);
     } else {
       throw new HttpException(
         {

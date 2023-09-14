@@ -22,7 +22,7 @@ export class Post {
   url: string;
 
   @Prop({})
-  thumbnail: string;
+  thumbnailurl: string;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

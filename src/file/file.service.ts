@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-
 import * as fs from 'fs';
 import * as path from 'path';
 import * as shortId from 'shortId';
@@ -8,9 +7,17 @@ import * as shortId from 'shortId';
 export class FileService {
   createFile(file: any): string {
     try {
+      let filePath = '';
       const fileExtension = file.originalname.split('.').pop();
       const fileName = shortId.generate() + '.' + fileExtension;
-      const filePath = path.resolve(__dirname, '..', '../static');
+      const fileType = file.mimetype.split('/')[0];
+      const contentType = fileType == 'image' ? 'IMAGE' : 'VIDEO';
+      if (contentType == 'IMAGE') {
+        filePath = path.resolve(__dirname, '..', '../static/image');
+      } else if (contentType == 'VIDEO') {
+        filePath = path.resolve(__dirname, '..', '../static/video');
+      }
+      // const filePath = path.resolve(__dirname, '..', '../static');
       if (!fs.existsSync(filePath)) {
         fs.mkdirSync(filePath, { recursive: true });
       }
