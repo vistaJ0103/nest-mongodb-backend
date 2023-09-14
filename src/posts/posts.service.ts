@@ -18,15 +18,21 @@ export class PostsService {
     @InjectModel(Commentary.name)
     private commentaryModel: Model<Commentary>,
   ) {}
-  async create(createPostDto: CreatePostDto, file, userId: string) {
-    if (file) {
-      file = this.fileService.createFile(file);
-    }
-    const createdPosts = await new this.postModel({
+  async create(createPostDto: CreatePostDto, userId: string, files: any) {
+    const fileType = files.file[0].mimetype.split('/')[0];
+    const contentType = fileType == 'image' ? 'IMAGE' : 'VIDEO';
+    // if (file) {
+    //   file = this.fileService.createFile(file);
+    // }
+    const filename = await this.fileService.createFile(files.file[0]);
+    // console.log(filename, '-------------');
+    const createdPosts = new this.postModel({
       content: createPostDto.content,
       author: userId,
-      file: file,
-      type: createPostDto.type,
+      // url: imageUrl.secure_url,
+      filename: filename,
+      type: contentType,
+      // thumbnail: `/uploads/${thumbnail.filename}`,
     });
     return createdPosts.save();
   }

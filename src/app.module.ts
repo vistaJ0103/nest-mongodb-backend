@@ -18,11 +18,13 @@ import { UsersModule } from './users/users.module';
   imports: [
     ConfigModule.forRoot({
       validationSchema: Joi.object({
-        MONGODB_URI: Joi.string(),
+        // MONGODB_URI: Joi.string(),
         JWT_ACCESS_SECRET: Joi.string(),
         ACCESS_TOKEN_EXPIRATION: Joi.string(),
         JWT_REFRESH_SECRET: Joi.string(),
         REFRESH_TOKEN_EXPIRATION: Joi.string(),
+        // CLOUDINARY_API_KEY: Joi.string(),
+        // CLOUDINARY_SECRET_KEY: Joi.string(),
       }),
       validationOptions: {
         allowUnknown: true,

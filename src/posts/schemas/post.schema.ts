@@ -6,20 +6,23 @@ export type PostDocument = Post & Document;
 
 @Schema({ timestamps: true, toJSON: { getters: true } })
 export class Post {
+  @Prop({ type: SchemaTypes.ObjectId, ref: User.name })
+  author: Types.ObjectId;
+
   @Prop({ required: true })
   content: string;
 
   @Prop({})
-  file: string;
+  filename: string;
+
   @Prop({})
   type: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: User.name })
-  author: Types.ObjectId;
-  // @Prop({ type: SchemaTypes.ObjectId, ref: Commentary.name })
-  // comment: Types.ObjectId;
-  // @Prop({ type: SchemaTypes.ObjectId, ref: Like.name })
-  // like: Types.ObjectId;
+  @Prop({})
+  url: string;
+
+  @Prop({})
+  thumbnail: string;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

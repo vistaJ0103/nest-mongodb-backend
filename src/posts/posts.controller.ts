@@ -8,11 +8,11 @@ import {
   Post,
   Query,
   Request,
-  UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiConsumes,
@@ -23,6 +23,7 @@ import {
 import { GeneralResponseDTO } from 'src/auth/dto/auth.dto';
 import { AccessTokenGuard } from 'src/auth/strategies/gaurd.access_token';
 import { ErrorResponseDTO } from 'src/error/dto/error.response.dto';
+import { contentFileFilter } from 'src/file/file-filter';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostsService } from './posts.service';
 
@@ -49,14 +50,26 @@ export class PostsController {
     type: ErrorResponseDTO,
     description: 'Validation error',
   })
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'file', maxCount: 1 },
+        // { name: 'file1', maxCount: 1 },
+      ],
+      {
+        limits: { fieldSize: 100000000 },
+        fileFilter: contentFileFilter,
+      },
+    ),
+  )
   async create(
     @Request() req: any,
     @Body() createPostDto: CreatePostDto,
-    @UploadedFile() file,
+    @UploadedFiles() files,
   ) {
+    // console.log(files, '+____');
     if (createPostDto.content) {
-      return this.postsService.create(createPostDto, file, req.user.id);
+      return await this.postsService.create(createPostDto, req.user.id, files);
     } else {
       throw new HttpException(
         {
@@ -66,6 +79,7 @@ export class PostsController {
       );
     }
   }
+
   @UseGuards(AccessTokenGuard)
   @Get('all')
   findAll(
