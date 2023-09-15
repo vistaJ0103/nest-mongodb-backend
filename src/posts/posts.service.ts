@@ -28,33 +28,37 @@ export class PostsService {
     private commentaryModel: Model<Commentary>,
   ) {}
   async create(createPostDto: CreatePostDto, userId: string, files: any) {
-    let thumbnailurl = '';
-    let url = '';
-    const fileType = files.mimetype.split('/')[0];
-    const contentType = fileType == 'image' ? 'IMAGE' : 'VIDEO';
-    const filename = this.fileService.createFile(files);
-    const videoPath = `./static/video/${filename}`;
-    const imagename = `${filename}.png`;
+    let thumbnailurl: string;
+    let fileurl: string;
+    let contentType: string;
+    let videoPath: string;
+    let imagename: string;
+    let filename: string;
+    if (files) {
+      const fileType = files.mimetype.split('/')[0];
+      contentType = fileType == 'image' ? 'IMAGE' : 'VIDEO';
+      filename = this.fileService.createFile(files);
+      videoPath = `./static/video/${filename}`;
+      imagename = `${filename}.png`;
 
-    if (contentType == 'VIDEO') {
-      url = '/video';
-      thumbnailurl = `/thumbnail/'${imagename}`;
-      generateThumbnail(videoPath, imagename)
-        .then(() => console.log('Thumnail generated successfully'))
-        .catch((err) => console.error(err));
-    } else {
-      url = '/image';
-      thumbnailurl = '';
+      if (contentType == 'VIDEO') {
+        fileurl = `/video/${filename}`;
+        thumbnailurl = `/thumbnail/${imagename}`;
+        generateThumbnail(videoPath, imagename)
+          .then(() => console.log('Thumnail generated successfully'))
+          .catch((err) => console.error(err));
+      } else {
+        fileurl = `/image/${filename}`;
+      }
     }
     const createdPosts = new this.postModel({
       content: createPostDto.content,
       author: userId,
-      filename: filename,
+      filename: fileurl,
       type: contentType,
-      url: url,
       thumbnailurl: thumbnailurl,
     });
-    return createdPosts.save();
+    return (await createdPosts.save()).populate('author', ['username']);
   }
   async findAll(pagenum: number, pagecnt: number, userId: string) {
     const page: number = (pagenum - 1) * pagecnt;
@@ -74,6 +78,8 @@ export class PostsService {
         .populate('user', 'username')
         .sort({ _id: -1 })
         .limit(3);
+      const commentscnt = await this.commentaryModel.find({ post: post._id });
+      const commentcnt = commentscnt.length;
       const cnt = await this.likeModel.find({
         post: post._id,
         like: true,
@@ -92,6 +98,7 @@ export class PostsService {
         ...post,
         likecnt,
         liketype,
+        commentcnt,
       };
       postdata.push({ post: _post, comments });
     }

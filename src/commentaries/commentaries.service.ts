@@ -17,13 +17,18 @@ export class CommentariesService {
     userId: string,
     postId: string,
     createCommentaryDto: CreateCommentaryDto,
-  ): Promise<Commentary> {
+  ) {
+    // const postdata: any[] = [];
     const createdCommentary = new this.commentaryModel({
       commentary: createCommentaryDto.commentary,
       user: userId,
       post: postId,
     });
-    return createdCommentary.save();
+    const newcomment = await createdCommentary.save();
+    const comments = await newcomment.populate('user', 'username');
+    const commentscnt = await this.commentaryModel.find({ post: postId });
+    const commentcnt = commentscnt.length;
+    return { comments, commentcnt };
   }
 
   async findAll(postId: string): Promise<any> {

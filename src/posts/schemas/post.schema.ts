@@ -19,9 +19,6 @@ export class Post {
   type: string;
 
   @Prop({})
-  url: string;
-
-  @Prop({})
   thumbnailurl: string;
 }
 

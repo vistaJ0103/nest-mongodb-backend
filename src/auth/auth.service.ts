@@ -47,9 +47,10 @@ export class AuthService {
     }
     // Hash password
     const hash = await this.hashData(createUserDto.password);
-
+    let filename: string;
     if (avatar) {
-      avatar = this.fileService.createFile(avatar);
+      filename = this.fileService.createFile(avatar);
+      avatar = `/image/${filename}`;
     }
     const newUser = await this.usersService.create({
       ...createUserDto,

@@ -20,13 +20,16 @@ export class UsersService {
   }
 
   async findAll(user_id: string) {
-    const user = await this.userModel.findById(user_id);
+    const users = await this.userModel.findById(user_id);
     const follow = await this.followsService.findAll(user_id);
     const posts = await this.postService.postsAll();
     const postcnt = posts.length;
-    // user = {user.username}
-    const username = user.username;
-    return { username, follow, posts, postcnt };
+    const user = {
+      username: users.username,
+      avatar: users.avatar,
+      _id: users._id,
+    };
+    return { user, follow, posts, postcnt };
   }
 
   async findById(id: string): Promise<UserDocument> {
